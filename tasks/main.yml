@@ -1,0 +1,105 @@
+---
+- name: Nextcloud install packages
+  apt:
+    name: "{{ nextcloud__default_packages }}"
+    update_cache: yes
+    state: present
+  when: nextcloud__install
+
+- name: Apache2 PHP configuration file 1/4
+  lineinfile:
+    path: "{{ nextcloud__apache_php_config_file }}"
+    regexp: "^memory_limit = "
+    line: "memory_limit = {{ nextcloud__apache_memory_limit }}"
+  when: nextcloud__configure
+  notify: Reload Apache2
+
+- name: Apache2 PHP configuration file 2/4
+  lineinfile:
+    path: "{{ nextcloud__apache_php_config_file }}"
+    regexp: "^upload_max_filesize = "
+    line: "upload_max_filesize = {{ nextcloud__apache_upload_max_filesize }}"
+  when: nextcloud__configure
+  notify: Reload Apache2
+
+- name: Apache2 PHP configuration file 3/4
+  lineinfile:
+    path: "{{ nextcloud__apache_php_config_file }}"
+    regexp: "^post_max_size = "
+    line: "post_max_size = {{ nextcloud__apache_post_max_size }}"
+  when: nextcloud__configure
+  notify: Reload Apache2
+
+- name: Apache2 PHP configuration file 4/4
+  lineinfile:
+    path: "{{ nextcloud__apache_php_config_file }}"
+    regexp: "^max_execution_time = "
+    line: "max_execution_time = {{ nextcloud__apache_max_execution_time }}"
+  when: nextcloud__configure
+  notify: Reload Apache2
+
+- name: Create MariaDB Database
+  mysql_db:
+    name: "{{ nextcloud__db_name }}"
+    state: present
+    login_user: root
+    login_unix_socket: /run/mysqld/mysqld.sock
+  when: nextcloud__configure
+
+- name: Create database user
+  mysql_user:
+    config_file: "/etc/mysql/debian.cnf"
+    name: "{{ nextcloud__db_user }}"
+    host: localhost
+    password: "{{ nextcloud__db_pass }}"
+    priv: '{{ nextcloud__db_name }}.*:ALL'
+    state: present
+    login_user: root
+    login_unix_socket: /run/mysqld/mysqld.sock
+  when: nextcloud__configure
+
+- name: Verify if archive is present
+  stat:
+    path: /var/www/html/nextcloud
+  register: nextcloud_downloaded
+  check_mode: no
+
+- name: Download and Unarchive downloaded
+  unarchive:
+    src: "{{ nextcloud__download_url }}"
+    dest: /var/www/html
+    owner: www-data
+    group: www-data
+    remote_src: yes
+  when:
+    - nextcloud__configure
+    - not nextcloud_downloaded.stat.exists
+
+- name: Configure apache modules
+  apache2_module:
+    state: present
+    name: "{{ item }}"
+  with_items:
+    - rewrite
+    - headers
+    - env
+    - dir
+    - mime
+    - ssl
+  when: nextcloud__configure
+  notify: Restart Apache2
+
+- name: Configure apache server virtualhost
+  template:
+    src: nextcloud_apache.conf
+    dest: /etc/apache2/sites-available/nextcloud.conf
+  when: nextcloud__configure
+  notify: Restart Apache2
+
+- name: Setup symlink for enabling site
+  file:
+    state: link
+    path: /etc/apache2/sites-enabled/nextcloud.conf
+    src: /etc/apache2/sites-available/nextcloud.conf
+  when: nextcloud__configure
+  notify: Restart Apache2

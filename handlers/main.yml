@@ -1,0 +1,11 @@
+---
+# Nextcloud handlers
+- name: Restart Apache2
+  service:
+    name: apache2
+    state: restarted
+
+- name: Reload Apache2
+  service:
+    name: apache2
+    state: reloaded
