@@ -6,6 +6,33 @@
     state: present
   when: nextcloud__install
 
+# for pdlib, check https://help.nextcloud.com/t/how-to-install-pdlib-on-your-server-for-face-recognition/167979 
+- name: Add pdlib package key
+  apt_key:
+    url: https://repo.delellis.com.ar/repo.gpg.key
+    keyring: /etc/apt/trusted.gpg.d/delellis-keyring.gpg
+  when:
+    - nextcloud__install
+    - nextcloud__add_pdlib is defined and nextcloud__add_pdlib
+
+- name: Add pdlib repository
+  apt_repository:
+    repo: deb [signed-by=/etc/apt/trusted.gpg.d/delellis-keyring.gpg arch=amd64] https://repo.delellis.com.ar bullseye bullseye
+    state: present
+    filename: delellis
+  when:
+    - nextcloud__install
+    - nextcloud__add_pdlib is defined and nextcloud__add_pdlib
+
+- name: Nextcloud Face recog install packages
+  apt:
+    name: php7.4-pdlib
+    update_cache: yes
+    state: present
+  when:
+    - nextcloud__install
+    - nextcloud__add_pdlib is defined and nextcloud__add_pdlib
+
 - name: Apache2 PHP configuration file 1/4
   lineinfile:
     path: "{{ nextcloud__apache_php_config_file }}"
