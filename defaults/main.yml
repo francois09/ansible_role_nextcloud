@@ -23,6 +23,7 @@ nextcloud__default_packages:
   - libmagickcore-6.q16-6-extra
   - python3-pymysql
   - ffmpeg
+  # - php-bz2
 
 nextcloud__apache_php_config_file: "/etc/php/7.4/apache2/php.ini"
 nextcloud__apache_memory_limit: "512M"
