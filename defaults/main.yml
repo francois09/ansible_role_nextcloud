@@ -6,23 +6,23 @@ nextcloud__configure: False
 # defaults file for nextcloud
 nextcloud__default_packages:
   - apache2
-  - libapache2-mod-php
   - mariadb-server
-  - php-xml
-  - php-cli
-  - php-cgi
-  - php-mysql
-  - php-mbstring
-  - php-gd
-  - php-curl
-  - php-zip
-  - php-intl
-  - php-bcmath
-  - php-gmp
-  - php-imagick
   - libmagickcore-6.q16-6-extra
   - python3-pymysql
   - ffmpeg
+  - libapache2-mod-php7.4
+  - php7.4-xml
+  - php7.4-cli
+  - php7.4-cgi
+  - php7.4-mysql
+  - php7.4-mbstring
+  - php7.4-gd
+  - php7.4-curl
+  - php7.4-zip
+  - php7.4-intl
+  - php7.4-bcmath
+  - php7.4-gmp
+  - php7.4-imagick
   # - php-bz2
 
 nextcloud__apache_php_config_file: "/etc/php/7.4/apache2/php.ini"
