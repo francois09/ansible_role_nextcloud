@@ -1,0 +1,16 @@
+[Unit]
+Description=Elasticsearch Worker for Nextcloud Fulltext Search
+After=network.target mysql.service
+Requires=mysql.service
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/html/nextcloud
+ExecStart=/usr/bin/php /var/www/html/nextcloud/occ fulltextsearch:live -q
+ExecStop=/usr/bin/php /var/www/html/nextcloud/occ fulltextsearch:stop
+Nice=19
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
