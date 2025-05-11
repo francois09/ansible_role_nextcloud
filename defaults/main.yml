@@ -36,3 +36,8 @@ nextcloud__db_user: "nextclouduser"
 nextcloud__db_pass: "nextcloudpass"
 
 nextcloud__download_url: "https://download.nextcloud.com/server/releases/nextcloud-23.0.1.zip"
+
+nextcloud__fulltextsearch: False
+nextcloud__fulltextsearch_es_host: localhost:9200
+nextcloud__fulltextsearch_es_index: xcloud
+nextcloud__fulltextsearch_initial_indexed: False

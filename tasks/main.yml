@@ -130,3 +130,42 @@
     src: /etc/apache2/sites-available/nextcloud.conf
   when: nextcloud__configure
   notify: Restart Apache2
+
+- name: Create index for NextCloud Fulltextsearch
+  shell: 'curl -X PUT "{{ nextcloud__fulltextsearch_es_host }}:9200/{{ nextcloud__fulltextsearch_es_index }}?pretty"'
+  when:
+    - nextcloud__configure
+    - nextcloud__fulltextsearch
+
+- name: Create processor for NextCloud
+  shell: 'curl -X PUT -d ''{"description" : "Extract attachment information",  "processors" : [{"attachment" : {"field" : "content","indexed_chars" : -1}}]}'' -H "Content-Type: application/json" "{{ nextcloud__fulltextsearch_es_host }}:9200/_ingest/pipeline/attachment?pretty"'
+  when:
+    - nextcloud__configure
+    - nextcloud__fulltextsearch
+
+- name: Create service file for live indexing
+  template:
+    src: nextcloud-fulltext-elasticsearch-worker.service
+    dest: /etc/systemd/system/nextcloud-fulltext-elasticsearch-worker.service
+  when:
+    - nextcloud__configure
+    - nextcloud__fulltextsearch
+
+- name: Enable live indexing
+  service:
+    name: nextcloud-fulltext-elasticsearch-worker
+    state: enabled
+  when:
+    - nextcloud__configure
+    - nextcloud__fulltextsearch
+
+# First indexation should be done before starting this service
+# It's done with: #sudo -u www-data nice -19 php /var/www/html/nextcloud/occ fulltextsearch:index
+- name: Start live indexing
+  service:
+    name: nextcloud-fulltext-elasticsearch-worker
+    state: started
+  when:
+    - nextcloud__configure
+    - nextcloud__fulltextsearch
+    - nextcloud__fulltextsearch_initial_indexed
