@@ -3,6 +3,10 @@
 nextcloud__install: False
 nextcloud__configure: False
 
+nextcloud__php_version_number: "7.4"
+nextcloud__php_version: "php{{ nextcloud__php_version_number }}"
+# nextcloud__php_version: "php8.2"
+
 # defaults file for nextcloud
 nextcloud__default_packages:
   - apache2
@@ -10,22 +14,22 @@ nextcloud__default_packages:
   - libmagickcore-6.q16-6-extra
   - python3-pymysql
   - ffmpeg
-  - libapache2-mod-php7.4
-  - php7.4-xml
-  - php7.4-cli
-  - php7.4-cgi
-  - php7.4-mysql
-  - php7.4-mbstring
-  - php7.4-gd
-  - php7.4-curl
-  - php7.4-zip
-  - php7.4-intl
-  - php7.4-bcmath
-  - php7.4-gmp
-  - php7.4-imagick
+  - "libapache2-mod-{{ nextcloud__php_version }}"
+  - "{{ nextcloud__php_version }}-xml"
+  - "{{ nextcloud__php_version }}-cli"
+  - "{{ nextcloud__php_version }}-cgi"
+  - "{{ nextcloud__php_version }}-mysql"
+  - "{{ nextcloud__php_version }}-mbstring"
+  - "{{ nextcloud__php_version }}-gd"
+  - "{{ nextcloud__php_version }}-curl"
+  - "{{ nextcloud__php_version }}-zip"
+  - "{{ nextcloud__php_version }}-intl"
+  - "{{ nextcloud__php_version }}-bcmath"
+  - "{{ nextcloud__php_version }}-gmp"
+  - "{{ nextcloud__php_version }}-imagick"
   # - php-bz2
 
-nextcloud__apache_php_config_file: "/etc/php/7.4/apache2/php.ini"
+nextcloud__apache_php_config_file: "/etc/php/{{ nextcloud__php_version_number }}/apache2/php.ini"
 nextcloud__apache_memory_limit: "512M"
 nextcloud__apache_upload_max_filesize: "500M"
 nextcloud__apache_post_max_size: "500M"

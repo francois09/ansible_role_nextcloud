@@ -151,20 +151,13 @@
     - nextcloud__configure
     - nextcloud__fulltextsearch
 
-- name: Enable live indexing
-  service:
-    name: nextcloud-fulltext-elasticsearch-worker
-    state: enabled
-  when:
-    - nextcloud__configure
-    - nextcloud__fulltextsearch
-
 # First indexation should be done before starting this service
 # It's done with: #sudo -u www-data nice -19 php /var/www/html/nextcloud/occ fulltextsearch:index
-- name: Start live indexing
+- name: Start/enable live indexing
   service:
     name: nextcloud-fulltext-elasticsearch-worker
     state: started
+    enabled: true
   when:
     - nextcloud__configure
     - nextcloud__fulltextsearch
