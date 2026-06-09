@@ -3,7 +3,7 @@
 nextcloud__install: False
 nextcloud__configure: False
 
-nextcloud__php_version_number: "7.4"
+nextcloud__php_version_number: "8.4"
 nextcloud__php_version: "php{{ nextcloud__php_version_number }}"
 # nextcloud__php_version: "php8.2"
 
@@ -11,7 +11,9 @@ nextcloud__php_version: "php{{ nextcloud__php_version_number }}"
 nextcloud__default_packages:
   - apache2
   - mariadb-server
-  - libmagickcore-6.q16-6-extra
+  - imagemagick
+  # - libmagickcore-6.q16-6-extra
+  - libmagickcore-7.q16hdri-10-extra
   - python3-pymysql
   - ffmpeg
   - "libapache2-mod-{{ nextcloud__php_version }}"
@@ -27,6 +29,7 @@ nextcloud__default_packages:
   - "{{ nextcloud__php_version }}-bcmath"
   - "{{ nextcloud__php_version }}-gmp"
   - "{{ nextcloud__php_version }}-imagick"
+  - "{{ nextcloud__php_version }}-apcu"
   # - php-bz2
 
 nextcloud__apache_php_config_file: "/etc/php/{{ nextcloud__php_version_number }}/apache2/php.ini"
